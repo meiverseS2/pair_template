@@ -4,190 +4,178 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>페어틀</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Nanum+Myeongjo&family=Noto+Sans+KR&family=Noto+Serif+KR&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f1f1ef;--ink:#1a1a1a;--line:#1a1a1a;--card1:#2e2e30;--card2:#2e2e30;--sub:#6d7fa6}
-*{box-sizing:border-box}
-body{margin:0;background:#ddd;color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif;font-size:14px;line-height:1.6}
-#toolbar{position:sticky;top:0;z-index:50;background:#222;color:#fff;display:flex;gap:10px;align-items:center;padding:8px 14px;flex-wrap:wrap;font-size:12px}
-#toolbar button{background:#fff;color:#111;border:0;border-radius:6px;padding:5px 11px;font:inherit;cursor:pointer}
-#toolbar label{display:flex;align-items:center;gap:4px}
-#toolbar input[type=color]{width:26px;height:22px;padding:0;border:0;background:none;cursor:pointer}
-#toolbar .sep{width:1px;height:20px;background:#555}
-#sheet{max-width:1100px;margin:18px auto;background:var(--bg);padding:48px 40px 60px}
-[contenteditable]{outline:none;border-radius:2px}
-[contenteditable]:hover{background:rgba(255,220,0,.15)}
-[contenteditable]:focus{background:rgba(255,220,0,.28)}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:56px}
-@media(max-width:850px){.layout{grid-template-columns:1fr}#sheet{padding:28px 18px}}
+:root{--bg:#f4f4f2;--ink:#1a1a1a;--sub:#888;--line:#1a1a1a;--font:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+*{box-sizing:border-box;border-radius:0}
+body{margin:0;background:#cfcfcf;font-family:var(--font)}
+#toolbar{position:sticky;top:0;z-index:100;background:#222;color:#fff;display:flex;gap:6px 12px;align-items:center;padding:6px 10px;flex-wrap:wrap;font:12px/1.3 system-ui,sans-serif}
+#toolbar button,#toolbar select{background:#fff;color:#111;border:0;padding:4px 9px;font:inherit;cursor:pointer}
+#toolbar label{display:flex;align-items:center;gap:4px;white-space:nowrap}
+#toolbar input[type=color]{width:24px;height:20px;padding:0;border:0;background:none;cursor:pointer}
+#toolbar input[type=range]{width:70px}
+#toolbar .g{display:flex;gap:6px;align-items:center;padding-right:12px;border-right:1px solid #555}
+#toolbar .g:last-child{border:0}
+#toolbar select{max-width:130px}
+#stage{width:min(100vw - 16px,calc((100vh - 84px)*.75));margin:8px auto;container-type:inline-size}
+#sheet{position:relative;display:flex;aspect-ratio:3/4;background:var(--bg);color:var(--ink);font-size:1.25cqw;line-height:1.55;padding:3.6em 3.6em 3em;overflow:hidden;font-family:var(--font)}
+.bgimg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.15;pointer-events:none}
+.layout{position:relative;z-index:1;flex:1;display:grid;grid-template-columns:1.6fr 1fr;gap:3em;min-width:0}
+.layout>section{min-width:0;display:flex;flex-direction:column}
+[contenteditable]{outline:none}
+[contenteditable]:hover{background:rgba(255,215,0,.15)}
+[contenteditable]:focus{background:rgba(255,215,0,.28)}
+.cur{outline:1px dashed #4a90e2!important;outline-offset:1px}
 
-/* image slot */
-.img-slot{position:relative;background:#e2e2e0;border:1.5px solid var(--line);cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#888;font-size:11px;text-align:center}
+.img-slot{position:relative;background:rgba(0,0,0,.06);cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#999;font-size:.9em;text-align:center}
 .img-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.img-slot:hover{outline:2px dashed #888;outline-offset:-2px}
+.img-slot.nc{background:transparent}.img-slot.nc img{object-fit:contain}
+.img-slot:hover{outline:1px dashed #888;outline-offset:-1px}
 
-/* head */
-.head{display:flex;gap:18px;align-items:center}
-.logo{width:84px;height:84px;border-radius:50%;flex:none;border-width:2.5px}
-.world{flex:1;color:var(--sub);font-size:13px;border-top:1px solid var(--sub);border-bottom:1px solid var(--sub);padding:8px 2px;min-height:60px}
-.pairname{font-size:30px;font-weight:700;text-align:center;margin:26px 0 14px;letter-spacing:1px}
+.head{display:flex;gap:1.6em;align-items:center}
+.logo{width:6em;height:6em;flex:none}
+.world{flex:1;min-height:4em}
+.pairname{font-size:2.4em;font-weight:700;text-align:center;margin:.5em 0 .3em;line-height:1.3}
 
-/* profile */
-.profile{display:flex;gap:18px;align-items:flex-start;margin-top:14px}
+.profile{display:flex;gap:1.5em;align-items:flex-start;margin-top:1em}
 .profile.rev{flex-direction:row-reverse}
 .info{flex:1;min-width:0}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-bottom:10px}
-.f{display:flex;gap:8px;font-size:13px}
-.f b{flex:none;min-width:34px}
-.f span{flex:1;color:#444;border-bottom:1px dotted #999;min-height:20px}
-.extra{color:var(--sub);font-size:12.5px;border-top:1px solid var(--sub);border-bottom:1px solid var(--sub);padding:8px 2px;min-height:64px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:.3em 1.2em;margin-bottom:.8em}
+.f{display:flex;gap:.6em}.f b{flex:none;min-width:2.6em}.f span{flex:1;min-height:1.5em}
+.extra{border-top:1px solid var(--sub);border-bottom:1px solid var(--sub);padding:.6em .2em;min-height:5em;color:var(--sub)}
 
-/* ID card */
-.idcard{width:168px;flex:none;border-radius:16px;padding:12px 11px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25)}
-.idcard.c1{background:var(--card1)}.idcard.c2{background:var(--card2)}
-.idcard .pill{width:62%;height:12px;border-radius:8px;background:rgba(255,255,255,.14)}
-.idcard .badge{width:46px;height:46px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);border:0;background:#fff;color:#555}
-.idcard .photo{width:100%;aspect-ratio:3/4;border-radius:12px;border:0;background:#444}
-.idcard .nm{font-weight:700;font-size:17px;text-align:center;width:100%;min-height:26px}
-.idcard .nm:hover{background:rgba(255,255,255,.12)}
-.cardcolor{position:absolute;top:4px;right:4px;width:20px;height:20px;padding:0;border:1px solid #fff;border-radius:50%;cursor:pointer;opacity:0}
-.cardwrap{position:relative;flex:none}
-.cardwrap:hover .cardcolor{opacity:1}
+.idcard{width:13em;aspect-ratio:3/4;flex:none;background:#333;color:#fff;padding:.8em .8em .9em;display:flex;flex-direction:column;align-items:center;gap:.6em;box-shadow:0 .3em .9em rgba(0,0,0,.28)}
+.idcard .badge{width:2.4em;height:2.4em;flex:none}
+.idcard .photo{width:100%;flex:1;min-height:0;background:rgba(255,255,255,.1)}
+.idcard .nm{font-weight:700;font-size:1.5em;line-height:1.2;text-align:center;width:100%;flex:none}
 
-/* recognition */
-.recog{display:grid;grid-template-columns:1fr 36px 1fr;align-items:center;gap:8px;margin:22px 0 8px}
-.recog .box{border:2px solid var(--line);border-radius:10px;padding:8px 12px;min-height:70px;font-size:12.5px}
-.recog .box b{color:var(--sub);display:block;font-size:12px}
-.recog .arr{text-align:center;font-size:26px;line-height:1}
+.recog{display:grid;grid-template-columns:1fr 2.4em 1fr;align-items:center;gap:.6em;margin:1.4em 0 .4em}
+.recog .box{background:rgba(0,0,0,.045);padding:.6em .9em;min-height:5.2em}
+.recog .box b{display:block;color:var(--sub)}
+.recog .arr{text-align:center;font-size:2em;line-height:1}
 
-/* big images */
-.pics{display:flex;margin:26px 0 0;position:relative}
-.pics .img-slot{flex:1;height:360px;border-radius:30px 30px 20px 20px;background:#e8e8e6}
-.pics .img-slot+.img-slot{margin-left:-14px;border-radius:12px 30px 20px 30px}
-.pic-cap{color:var(--sub);text-align:center;margin:8px 0 0;font-size:13px}
+.blank{flex:1;min-height:6em}
 
-/* characters */
-.chars{margin-top:30px}
-.char{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
-.char .num{width:62px;height:62px;border-radius:50%;flex:none;border-width:2.5px}
-.char .cb{flex:1;min-width:0}
-.char .cn{color:var(--sub);font-weight:500}
-.char .cd{border-top:1px solid var(--sub);border-bottom:1px solid var(--sub);padding:6px 2px;color:#444;font-size:13px;min-height:46px}
+.chars{margin-top:.6em}
+.char{display:flex;gap:1.2em;align-items:flex-start;margin-bottom:1em}
+.char .num{width:4.6em;height:4.6em;flex:none}
+.char .cb{flex:1;min-width:0}.char .cn{font-weight:700}.char .cd{color:#444;min-height:2.6em}
 
-/* timeline */
-.tl{position:relative;padding-left:46px}
-.tl::before{content:"";position:absolute;left:14px;top:0;bottom:0;width:2px;background:var(--line)}
-.ev{position:relative;margin-bottom:22px}
-.ev .smile{position:absolute;left:-46px;top:12px;width:30px;height:30px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><circle cx='15' cy='15' r='14' fill='%23f4dc7c'/><circle cx='15' cy='15' r='14' fill='none' stroke='%23e6c85a' stroke-width='1'/><circle cx='10.5' cy='12' r='1.3' fill='%23222'/><circle cx='19.5' cy='12' r='1.3' fill='%23222'/><path d='M10 17.5q5 4.5 10 0' fill='none' stroke='%23222' stroke-width='1.6' stroke-linecap='round'/></svg>") center/contain no-repeat}
-.evbox{border:2px solid var(--line);border-radius:14px;padding:12px 16px 14px;background:rgba(255,255,255,.35)}
-.evbox .t{color:var(--sub);font-weight:700;font-size:14px}
-.evbox .t::after{content:".txt";color:var(--ink);font-weight:700}
-.evbox .b{margin-top:6px;font-size:13px;color:#333;min-height:44px;white-space:pre-wrap}
-.note{color:var(--sub);font-size:12px;text-align:center}
+.tl{position:relative;padding-left:3.4em;flex:1;display:flex;flex-direction:column}
+.tl::before{content:"";position:absolute;left:1.2em;top:0;bottom:0;width:1px;background:var(--line)}
+.ev-list{flex:1;display:flex;flex-direction:column}
+.ev{position:relative;flex:1;min-height:5em;margin-bottom:1.1em;display:flex}
+.ev .smile{position:absolute;left:-3.2em;top:.7em;width:2em;height:2em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><circle cx='15' cy='15' r='14' fill='%23f4dc7c'/><circle cx='10.5' cy='12' r='1.3' fill='%23222'/><circle cx='19.5' cy='12' r='1.3' fill='%23222'/><path d='M10 17.5q5 4.5 10 0' fill='none' stroke='%23222' stroke-width='1.6' stroke-linecap='round'/></svg>") center/contain no-repeat}
+.evbox{flex:1;border:1px solid var(--line);padding:.7em 1em}
+.evbox .t{font-weight:700}.evbox .t::after{content:".txt"}
+.evbox .b{margin-top:.3em;color:#444;white-space:pre-wrap}
 
-/* list controls */
+.sticker{position:absolute;z-index:5;cursor:move;touch-action:none}
+.sticker img{width:100%;display:block;pointer-events:none;user-select:none}
+.sticker:hover{outline:1px dashed #4a90e2}
+.sx,.sr{position:absolute;display:none;background:#4a90e2;color:#fff;width:1.6em;height:1.6em;font-size:.9em;line-height:1.6em;text-align:center;border:0;padding:0;cursor:pointer}
+.sx{top:0;right:0;background:#d33}.sr{right:0;bottom:0;cursor:nwse-resize}
+.sticker:hover .sx,.sticker:hover .sr{display:block}
+
 .li{position:relative}
-.ctl{position:absolute;top:-10px;right:-8px;display:none;gap:3px;z-index:20}
+.ctl{position:absolute;top:-.5em;right:-.5em;display:none;gap:2px;z-index:20}
 .li:hover>.ctl{display:flex}
-.ctl button{width:20px;height:20px;border:0;border-radius:50%;background:#d33;color:#fff;font-size:11px;padding:0;cursor:pointer}
+.ctl button{width:1.7em;height:1.7em;border:0;background:#d33;color:#fff;font-size:.85em;padding:0;cursor:pointer}
 .ctl .mv{background:#333}
-.add{display:block;margin:10px auto;background:none;border:1px dashed #888;color:#666;border-radius:6px;padding:3px 12px;font-size:12px;cursor:pointer}
-.hide-ui .ctl,.hide-ui .add,.hide-ui .cardcolor{display:none!important}
+.add{align-self:center;margin:.4em 0;background:none;border:1px dashed #888;color:#777;padding:.1em 1em;font:inherit;font-size:.9em;cursor:pointer}
+.hide-ui .ctl,.hide-ui .add,.hide-ui .sx,.hide-ui .sr{display:none!important}
 .hide-ui [contenteditable]:hover,.hide-ui [contenteditable]:focus{background:none}
-.hide-ui .img-slot{cursor:default}.hide-ui .img-slot:hover{outline:0}.hide-ui .ph{display:none}
+.hide-ui .img-slot,.hide-ui .sticker{cursor:default}.hide-ui .img-slot:hover,.hide-ui .sticker:hover{outline:0}.hide-ui .ph{display:none}
 </style>
 </head>
 <body>
 <div id="toolbar">
-  <b>편집 모드</b>
-  <button id="bSave">저장</button><button id="bDl">HTML 다운로드</button><button id="bPrev">미리보기</button><button id="bReset">초기화</button>
-  <span class="sep"></span>
-  <label>배경<input type="color" data-var="--bg" value="#f1f1ef"></label>
-  <label>글자<input type="color" data-var="--ink" value="#1a1a1a"></label>
-  <label>선<input type="color" data-var="--line" value="#1a1a1a"></label>
-  <label>강조(보조글)<input type="color" data-var="--sub" value="#6d7fa6"></label>
-  <label>사원증 A<input type="color" data-var="--card1" value="#2e2e30"></label>
-  <label>사원증 B<input type="color" data-var="--card2" value="#2e2e30"></label>
+  <div class="g"><button id="bSave">저장</button><button id="bDl">HTML 다운로드</button><button id="bPrev">미리보기</button><button id="bReset">초기화</button></div>
+  <div class="g"><button id="bSticker">+ 스티커</button></div>
+  <div class="g">
+    <label>배경색<input type="color" data-var="--bg" value="#f4f4f2"></label>
+    <button id="bBg">배경 이미지</button>
+    <label>투명도<input type="range" id="bgo" min="0" max="100" value="15"></label>
+    <button id="bBgX">제거</button>
+  </div>
+  <div class="g">
+    <label>전체 글꼴<select id="fontAll"></select></label>
+    <label>기본 글자색<input type="color" data-var="--ink" value="#1a1a1a"></label>
+    <label>보조색<input type="color" data-var="--sub" value="#888888"></label>
+    <label>연표선<input type="color" data-var="--line" value="#1a1a1a"></label>
+  </div>
+  <div class="g" title="요소를 클릭하거나 글자를 드래그한 뒤 적용">
+    <b>선택 항목</b>
+    <label>글자색<input type="color" id="cText" value="#1a1a1a"></label>
+    <label>배경색<input type="color" id="cBg" value="#ffffff"></label>
+    <label>글꼴<select id="fontSel"></select></label>
+    <button id="bClr">스타일 해제</button>
+  </div>
 </div>
 
-<main id="sheet">
-<div class="layout">
-  <!-- LEFT -->
+<div id="stage"><main id="sheet">
+  <div class="bgimg"></div>
+  <div class="layout">
   <section>
     <div class="head">
-      <div class="img-slot logo"><span class="ph">로고</span></div>
+      <div class="img-slot nc logo"><span class="ph">로고</span></div>
       <div class="world" contenteditable="true">세계관 설명을 입력하세요.</div>
     </div>
     <div class="pairname" contenteditable="true">페어명</div>
 
     <div class="profile">
-      <div class="cardwrap"><div class="idcard c1">
-        <div class="pill"></div>
-        <div class="img-slot badge"><span class="ph">로고</span></div>
+      <div class="idcard">
+        <div class="img-slot nc badge"><span class="ph">로고</span></div>
         <div class="img-slot photo"><span class="ph">증명사진</span></div>
         <div class="nm" contenteditable="true">이름</div>
-      </div></div>
+      </div>
       <div class="info">
         <div class="fields">
-          <div class="f"><b contenteditable="true">신체</b><span contenteditable="true"></span></div>
-          <div class="f"><b contenteditable="true">가면</b><span contenteditable="true"></span></div>
-          <div class="f"><b contenteditable="true">소속</b><span contenteditable="true"></span></div>
-          <div class="f"><b contenteditable="true">직급</b><span contenteditable="true"></span></div>
+          <div class="f"><b contenteditable="true">신체</b><span contenteditable="true">-</span></div>
+          <div class="f"><b contenteditable="true">가면</b><span contenteditable="true">-</span></div>
+          <div class="f"><b contenteditable="true">소속</b><span contenteditable="true">-</span></div>
+          <div class="f"><b contenteditable="true">직급</b><span contenteditable="true">-</span></div>
         </div>
         <div class="extra" contenteditable="true">부가 설명</div>
       </div>
     </div>
 
     <div class="recog">
-      <div class="box"><b contenteditable="true">인식</b><div contenteditable="true">A → B 인식</div></div>
+      <div class="box"><b contenteditable="true">인식</b><div contenteditable="true">A → B</div></div>
       <div class="arr">⇅</div>
-      <div class="box"><b contenteditable="true">인식</b><div contenteditable="true">B → A 인식</div></div>
+      <div class="box"><b contenteditable="true">인식</b><div contenteditable="true">B → A</div></div>
     </div>
 
     <div class="profile rev">
-      <div class="cardwrap"><div class="idcard c2">
-        <div class="pill"></div>
-        <div class="img-slot badge"><span class="ph">로고</span></div>
+      <div class="idcard">
+        <div class="img-slot nc badge"><span class="ph">로고</span></div>
         <div class="img-slot photo"><span class="ph">증명사진</span></div>
         <div class="nm" contenteditable="true">이름</div>
-      </div></div>
+      </div>
       <div class="info">
         <div class="fields">
-          <div class="f"><b contenteditable="true">신체</b><span contenteditable="true"></span></div>
-          <div class="f"><b contenteditable="true">가면</b><span contenteditable="true"></span></div>
-          <div class="f"><b contenteditable="true">소속</b><span contenteditable="true"></span></div>
-          <div class="f"><b contenteditable="true">직급</b><span contenteditable="true"></span></div>
+          <div class="f"><b contenteditable="true">신체</b><span contenteditable="true">-</span></div>
+          <div class="f"><b contenteditable="true">가면</b><span contenteditable="true">-</span></div>
+          <div class="f"><b contenteditable="true">소속</b><span contenteditable="true">-</span></div>
+          <div class="f"><b contenteditable="true">직급</b><span contenteditable="true">-</span></div>
         </div>
         <div class="extra" contenteditable="true">부가 설명</div>
       </div>
     </div>
 
-    <div class="pics">
-      <div class="img-slot"><span class="ph">이미지</span></div>
-      <div class="img-slot"><span class="ph">이미지</span></div>
-    </div>
-    <div class="pic-cap" contenteditable="true">카톡 내역 같은 것 첨부 · 대화 확인 가능</div>
+    <div class="blank"></div>
 
     <div class="chars">
       <div data-list class="char-list">
-        <div class="char li">
-          <div class="img-slot num"><span class="ph">이미지</span></div>
-          <div class="cb"><div class="cn" contenteditable="true">등장인물 1</div><div class="cd" contenteditable="true">설명을 입력하세요.</div></div>
-        </div>
-        <div class="char li">
-          <div class="img-slot num"><span class="ph">2</span></div>
-          <div class="cb"><div class="cn" contenteditable="true">등장인물 2</div><div class="cd" contenteditable="true">설명을 입력하세요.</div></div>
-        </div>
-        <div class="char li">
-          <div class="img-slot num"><span class="ph">3</span></div>
-          <div class="cb"><div class="cn" contenteditable="true">등장인물 3</div><div class="cd" contenteditable="true">설명을 입력하세요.</div></div>
-        </div>
+        <div class="char li"><div class="img-slot nc num"><span class="ph">1</span></div><div class="cb"><div class="cn" contenteditable="true">등장인물 1</div><div class="cd" contenteditable="true">설명을 입력하세요.</div></div></div>
+        <div class="char li"><div class="img-slot nc num"><span class="ph">2</span></div><div class="cb"><div class="cn" contenteditable="true">등장인물 2</div><div class="cd" contenteditable="true">설명을 입력하세요.</div></div></div>
+        <div class="char li"><div class="img-slot nc num"><span class="ph">3</span></div><div class="cb"><div class="cn" contenteditable="true">등장인물 3</div><div class="cd" contenteditable="true">설명을 입력하세요.</div></div></div>
       </div>
-      <button class="add" data-add=".char-list">+ 등장인물 추가</button>
+      <button class="add" data-add=".char-list">+ 등장인물</button>
     </div>
   </section>
 
-  <!-- RIGHT -->
   <section>
     <div class="tl">
       <div data-list class="ev-list">
@@ -195,94 +183,128 @@ body{margin:0;background:#ddd;color:var(--ink);font-family:"Noto Sans KR",system
         <div class="ev li"><span class="smile"></span><div class="evbox"><div class="t" contenteditable="true">제목</div><div class="b" contenteditable="true">내용을 입력하세요.</div></div></div>
         <div class="ev li"><span class="smile"></span><div class="evbox"><div class="t" contenteditable="true">제목</div><div class="b" contenteditable="true">내용을 입력하세요.</div></div></div>
         <div class="ev li"><span class="smile"></span><div class="evbox"><div class="t" contenteditable="true">제목</div><div class="b" contenteditable="true">내용을 입력하세요.</div></div></div>
+        <div class="ev li"><span class="smile"></span><div class="evbox"><div class="t" contenteditable="true">제목</div><div class="b" contenteditable="true">내용을 입력하세요.</div></div></div>
+        <div class="ev li"><span class="smile"></span><div class="evbox"><div class="t" contenteditable="true">제목</div><div class="b" contenteditable="true">내용을 입력하세요.</div></div></div>
       </div>
-      <button class="add" data-add=".ev-list">+ 연표 추가</button>
+      <button class="add" data-add=".ev-list">+ 연표</button>
     </div>
   </section>
-</div>
-</main>
+  </div>
+</main></div>
 <input type="file" id="pick" accept="image/*" hidden>
 
 <script>
 (function(){
-  const sheet=document.getElementById('sheet'),root=document.documentElement,KEY='pair-sheet-v1',THEME='pair-theme-v1';
-  const pick=document.getElementById('pick');let target=null;
+const $=s=>document.querySelector(s),sheet=$('#sheet'),root=document.documentElement,pick=$('#pick');
+const KEY='pair-sheet-v2',TK='pair-theme-v2',SEL='[contenteditable="true"],.idcard,.evbox,.box,.img-slot,.extra,.tl,.smile,.char,.profile';
+const FONTS=['Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Serif KR','Nanum Gothic','Nanum Myeongjo','Batang','Dotum','Gulim','Gungsuh','Arial','Helvetica','Verdana','Tahoma','Trebuchet MS','Times New Roman','Georgia','Palatino','Garamond','Courier New','Impact','Comic Sans MS','serif','sans-serif','monospace','cursive'];
+const GEN=['serif','sans-serif','monospace','cursive'],fam=n=>GEN.includes(n)?n:`"${n}",sans-serif`;
+const preview=()=>document.body.classList.contains('hide-ui');
+['#fontAll','#fontSel'].forEach(s=>{const e=$(s);e.innerHTML=(s==='#fontSel'?'<option value="">(선택)</option>':'')+FONTS.map(f=>`<option value="${f}" style="font-family:${fam(f)}">${f}</option>`).join('')});
 
-  /* controls */
-  function ctl(item){
-    if(item.querySelector(':scope>.ctl'))return;
-    const c=document.createElement('div');c.className='ctl';c.contentEditable='false';
-    c.innerHTML='<button class="mv" data-a="u">↑</button><button class="mv" data-a="d">↓</button><button data-a="x">✕</button>';
-    item.appendChild(c);
-  }
-  const initCtl=()=>sheet.querySelectorAll('.li').forEach(ctl);
+/* theme */
+const theme=JSON.parse(localStorage.getItem(TK)||'{}');
+function setVar(k,v){root.style.setProperty(k,v);theme[k]=v;try{localStorage.setItem(TK,JSON.stringify(theme))}catch(e){}}
+Object.entries(theme).forEach(([k,v])=>{if(k.startsWith('--'))root.style.setProperty(k,v)});
+document.querySelectorAll('#toolbar input[data-var]').forEach(i=>{
+  const v=theme[i.dataset.var];if(v&&/^#/.test(v))i.value=v;
+  i.addEventListener('input',()=>setVar(i.dataset.var,i.value));
+});
+$('#fontAll').value=theme.fontName||'Pretendard';
+$('#fontAll').onchange=e=>{theme.fontName=e.target.value;setVar('--font',fam(e.target.value))};
 
-  /* per-card color pickers */
-  function initCardColors(){
-    sheet.querySelectorAll('.cardwrap').forEach((w,i)=>{
-      if(w.querySelector('.cardcolor'))return;
-      const v=w.querySelector('.idcard').classList.contains('c2')?'--card2':'--card1';
-      const inp=document.createElement('input');inp.type='color';inp.className='cardcolor';inp.title='이 사원증 색상';
-      inp.value=getComputedStyle(root).getPropertyValue(v).trim()||'#2e2e30';
-      inp.addEventListener('input',()=>{setVar(v,inp.value);syncToolbar()});
-      w.appendChild(inp);
-    });
-  }
+/* helpers */
+function readImg(f,max,cb){
+  const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{
+    const sc=Math.min(1,max/Math.max(im.width,im.height)),cv=document.createElement('canvas');
+    cv.width=im.width*sc;cv.height=im.height*sc;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
+    cb(f.type==='image/jpeg'?cv.toDataURL('image/jpeg',.88):cv.toDataURL('image/png'));
+  };im.src=r.result};r.readAsDataURL(f);
+}
+function choose(max,cb){pick.onchange=()=>{const f=pick.files[0];pick.value='';if(f)readImg(f,max,cb)};pick.click()}
+function ctl(it){if(it.querySelector(':scope>.ctl'))return;const c=document.createElement('div');c.className='ctl';c.contentEditable='false';c.innerHTML='<button class="mv" data-a="u">↑</button><button class="mv" data-a="d">↓</button><button data-a="x">✕</button>';it.appendChild(c)}
+const initCtl=()=>sheet.querySelectorAll('.li').forEach(ctl);
 
-  /* theme */
-  const theme=JSON.parse(localStorage.getItem(THEME)||'{}');
-  function setVar(k,v){root.style.setProperty(k,v);theme[k]=v;try{localStorage.setItem(THEME,JSON.stringify(theme))}catch(e){}}
-  function syncToolbar(){document.querySelectorAll('#toolbar input[data-var]').forEach(i=>{const v=getComputedStyle(root).getPropertyValue(i.dataset.var).trim();if(/^#[0-9a-f]{6}$/i.test(v))i.value=v})}
-  Object.entries(theme).forEach(([k,v])=>root.style.setProperty(k,v));
-  document.querySelectorAll('#toolbar input[data-var]').forEach(i=>i.addEventListener('input',()=>setVar(i.dataset.var,i.value)));
-
-  sheet.addEventListener('click',e=>{
-    const t=e.target;
-    if(document.body.classList.contains('hide-ui'))return;
-    const s=t.closest('.img-slot');if(s){target=s;pick.click();return}
-    const b=t.closest('.ctl button');
-    if(b){const it=b.closest('.li'),a=b.dataset.a;
-      if(a==='x'&&confirm('삭제할까요?'))it.remove();
-      if(a==='u'&&it.previousElementSibling)it.parentNode.insertBefore(it,it.previousElementSibling);
-      if(a==='d'&&it.nextElementSibling)it.parentNode.insertBefore(it.nextElementSibling,it);
+/* selection / current target */
+let cur=null,saved=null;
+function setCur(t){if(cur)cur.classList.remove('cur');cur=t;if(t)t.classList.add('cur')}
+sheet.addEventListener('mousedown',e=>{if(!preview()&&!e.target.closest('.sticker'))setCur(e.target.closest(SEL))});
+document.addEventListener('selectionchange',()=>{const s=getSelection();if(s.rangeCount&&sheet.contains(s.anchorNode))saved=s.isCollapsed?null:s.getRangeAt(0).cloneRange()});
+function apply(kind,val,live){
+  if(saved){
+    if(live)return;
+    const n=saved.commonAncestorContainer,host=(n.nodeType===1?n:n.parentElement).closest('[contenteditable="true"]');
+    if(host){host.focus();const s=getSelection();s.removeAllRanges();s.addRange(saved);
+      document.execCommand('styleWithCSS',false,true);
+      document.execCommand(kind==='color'?'foreColor':kind==='bg'?'hiliteColor':'fontName',false,kind==='font'?val:val);
       sched();return}
-    const ad=t.closest('.add');
-    if(ad){const l=sheet.querySelector(ad.dataset.add);if(l.lastElementChild){l.appendChild(l.lastElementChild.cloneNode(true));initCtl();sched()}}
-  });
+  }
+  if(!cur)return;
+  if(kind==='color')cur.style.color=val;else if(kind==='bg')cur.style.backgroundColor=val;else cur.style.fontFamily=fam(val);
+  sched();
+}
+[['#cText','color'],['#cBg','bg']].forEach(([s,k])=>{const e=$(s);e.addEventListener('input',()=>apply(k,e.value,true));e.addEventListener('change',()=>apply(k,e.value,false))});
+$('#fontSel').onchange=e=>{if(e.target.value)apply('font',e.target.value,false)};
+$('#bClr').onclick=()=>{if(cur){cur.style.color=cur.style.backgroundColor=cur.style.fontFamily='';sched()}};
 
-  pick.addEventListener('change',()=>{
-    const f=pick.files[0];if(!f||!target)return;
-    const r=new FileReader();
-    r.onload=()=>{const im=new Image();im.onload=()=>{
-      const sc=Math.min(1,1000/Math.max(im.width,im.height)),cv=document.createElement('canvas');
-      cv.width=im.width*sc;cv.height=im.height*sc;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
-      target.querySelectorAll('img').forEach(x=>x.remove());
-      const el=document.createElement('img');el.src=cv.toDataURL('image/jpeg',.88);target.prepend(el);
-      const p=target.querySelector('.ph');if(p)p.style.display='none';
-      pick.value='';sched()};im.src=r.result};
-    r.readAsDataURL(f);
-  });
-  sheet.addEventListener('input',sched);
-  sheet.addEventListener('paste',e=>{if(!e.target.closest('[contenteditable]'))return;e.preventDefault();document.execCommand('insertText',false,e.clipboardData.getData('text/plain'))});
+/* clicks */
+sheet.addEventListener('click',e=>{
+  if(preview())return;const t=e.target;
+  if(t.classList.contains('sx')){t.closest('.sticker').remove();sched();return}
+  const s=t.closest('.img-slot');
+  if(s){choose(s.classList.contains('nc')?800:1000,u=>{s.querySelectorAll('img').forEach(x=>x.remove());const im=document.createElement('img');im.src=u;s.prepend(im);const p=s.querySelector('.ph');if(p)p.style.display='none';sched()});return}
+  const b=t.closest('.ctl button');
+  if(b){const it=b.closest('.li'),a=b.dataset.a;
+    if(a==='x'&&confirm('삭제할까요?'))it.remove();
+    if(a==='u'&&it.previousElementSibling)it.parentNode.insertBefore(it,it.previousElementSibling);
+    if(a==='d'&&it.nextElementSibling)it.parentNode.insertBefore(it.nextElementSibling,it);
+    sched();return}
+  const ad=t.closest('.add');
+  if(ad){const l=sheet.querySelector(ad.dataset.add),c=l.lastElementChild.cloneNode(true);c.querySelectorAll('.cur').forEach(x=>x.classList.remove('cur'));l.appendChild(c);initCtl();sched()}
+});
 
-  let tm;function sched(){clearTimeout(tm);tm=setTimeout(save,600)}
-  function save(){sheet.querySelectorAll('.cardcolor,.ctl').forEach(x=>x.remove());try{localStorage.setItem(KEY,sheet.innerHTML)}catch(e){console.warn(e)}initCtl();initCardColors()}
-  try{const h=localStorage.getItem(KEY);if(h)sheet.innerHTML=h}catch(e){}
-  initCtl();initCardColors();syncToolbar();
+/* stickers */
+function addSticker(u){
+  const s=document.createElement('div');s.className='sticker';s.style.cssText='left:40%;top:40%;width:14%';
+  s.innerHTML=`<img src="${u}" alt=""><button class="sx" contenteditable="false">✕</button><i class="sr"></i>`;
+  sheet.appendChild(s);sched();
+}
+$('#bSticker').onclick=()=>choose(800,addSticker);
+let drag=null;
+sheet.addEventListener('pointerdown',e=>{
+  if(preview())return;const st=e.target.closest('.sticker');if(!st||e.target.classList.contains('sx'))return;
+  drag={st,m:!e.target.classList.contains('sr'),x:e.clientX,y:e.clientY,l:parseFloat(st.style.left),t:parseFloat(st.style.top),w:parseFloat(st.style.width),r:sheet.getBoundingClientRect()};
+  st.setPointerCapture(e.pointerId);e.preventDefault();
+});
+sheet.addEventListener('pointermove',e=>{
+  if(!drag)return;const dx=(e.clientX-drag.x)/drag.r.width*100,dy=(e.clientY-drag.y)/drag.r.height*100;
+  if(drag.m){drag.st.style.left=drag.l+dx+'%';drag.st.style.top=drag.t+dy+'%'}else drag.st.style.width=Math.max(2,drag.w+dx)+'%';
+});
+sheet.addEventListener('pointerup',()=>{if(drag){drag=null;sched()}});
 
-  document.getElementById('bSave').onclick=()=>{save();alert('저장했어요.')};
-  document.getElementById('bPrev').onclick=()=>{
-    const on=document.body.classList.toggle('hide-ui');
-    sheet.querySelectorAll('[contenteditable]').forEach(x=>x.contentEditable=on?'false':'true');
-  };
-  document.getElementById('bReset').onclick=()=>{if(confirm('처음 상태로 되돌릴까요?')){localStorage.removeItem(KEY);localStorage.removeItem(THEME);location.reload()}};
-  document.getElementById('bDl').onclick=()=>{
-    const was=document.body.classList.contains('hide-ui');if(was)document.getElementById('bPrev').click();
-    sheet.querySelectorAll('.cardcolor,.ctl').forEach(x=>x.remove());
-    const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
-    initCtl();initCardColors();
-    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download='pair.html';a.click();
-  };
+/* background */
+const bg=()=>sheet.querySelector('.bgimg');
+$('#bBg').onclick=()=>choose(1600,u=>{bg().style.backgroundImage=`url(${u})`;sched()});
+$('#bBgX').onclick=()=>{bg().style.backgroundImage='';sched()};
+$('#bgo').oninput=e=>{bg().style.opacity=e.target.value/100;sched()};
+
+/* save/load */
+sheet.addEventListener('input',sched);
+sheet.addEventListener('paste',e=>{if(!e.target.closest('[contenteditable]'))return;e.preventDefault();document.execCommand('insertText',false,e.clipboardData.getData('text/plain'))});
+let tm;function sched(){clearTimeout(tm);tm=setTimeout(save,600)}
+function clean(){sheet.querySelectorAll('.ctl').forEach(x=>x.remove());sheet.querySelectorAll('.cur').forEach(x=>x.classList.remove('cur'))}
+function save(){clean();try{localStorage.setItem(KEY,sheet.innerHTML)}catch(e){console.warn(e)}initCtl();if(cur)cur.classList.add('cur')}
+try{const h=localStorage.getItem(KEY);if(h)sheet.innerHTML=h}catch(e){}
+initCtl();$('#bgo').value=Math.round((parseFloat(bg().style.opacity)||.15)*100);
+
+$('#bSave').onclick=()=>{save();alert('저장했어요.')};
+$('#bPrev').onclick=()=>{const on=document.body.classList.toggle('hide-ui');setCur(null);sheet.querySelectorAll('[contenteditable]').forEach(x=>x.contentEditable=on?'false':'true')};
+$('#bReset').onclick=()=>{if(confirm('처음 상태로 되돌릴까요?')){localStorage.removeItem(KEY);localStorage.removeItem(TK);location.reload()}};
+$('#bDl').onclick=()=>{
+  if(preview())$('#bPrev').click();clean();
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['<!DOCTYPE html>\n'+root.outerHTML],{type:'text/html'}));a.download='pair.html';a.click();
+  initCtl();
+};
 })();
 </script>
 </body>
