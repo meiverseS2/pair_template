@@ -45,9 +45,10 @@ body{margin:0;background:#cfcfcf;font-family:var(--font)}
 .f{display:flex;gap:.6em}.f b{flex:none;min-width:2.6em}.f span{flex:1;min-height:1.5em}
 .extra{border-top:1px solid var(--sub);border-bottom:1px solid var(--sub);padding:.6em .2em;min-height:5em;color:var(--sub)}
 
-.idcard{width:13em;aspect-ratio:3/4;flex:none;background:#333;color:#fff;padding:.8em .8em .9em;display:flex;flex-direction:column;align-items:center;gap:.6em;box-shadow:0 .3em .9em rgba(0,0,0,.28)}
+.idcard{width:13em;flex:none;border-radius:.7em;background:#333;color:#fff;padding:.8em .8em .9em;display:flex;flex-direction:column;align-items:center;gap:.6em;box-shadow:0 .3em .9em rgba(0,0,0,.28)}
 .idcard .badge{width:2.4em;height:2.4em;flex:none}
-.idcard .photo{width:100%;flex:1;min-height:0;background:rgba(255,255,255,.1)}
+.idcard .photo{width:100%;aspect-ratio:3/4;flex:none;background:var(--pbg,#4a4a4a)}
+.img-slot.photo img{inset:auto;left:0;top:0;width:100%;height:auto;max-width:none;object-fit:fill}
 .idcard .nm{font-weight:700;font-size:1.5em;line-height:1.2;text-align:center;width:100%;flex:none}
 
 .recog{display:grid;grid-template-columns:1fr 2.4em 1fr;align-items:center;gap:.6em;margin:1.4em 0 .4em}
@@ -55,7 +56,7 @@ body{margin:0;background:#cfcfcf;font-family:var(--font)}
 .recog .box b{display:block;color:var(--sub)}
 .recog .arr{text-align:center;font-size:2em;line-height:1}
 
-.blank{flex:1;min-height:6em}
+.blank{flex:1;min-height:1em}
 
 .chars{margin-top:.6em}
 .char{display:flex;gap:1.2em;align-items:flex-start;margin-bottom:1em}
@@ -67,7 +68,7 @@ body{margin:0;background:#cfcfcf;font-family:var(--font)}
 .ev-list{flex:1;display:flex;flex-direction:column}
 .ev{position:relative;flex:1;min-height:5em;margin-bottom:1.1em;display:flex}
 .ev .smile{position:absolute;left:-3.2em;top:.7em;width:2em;height:2em;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><circle cx='15' cy='15' r='14' fill='%23f4dc7c'/><circle cx='10.5' cy='12' r='1.3' fill='%23222'/><circle cx='19.5' cy='12' r='1.3' fill='%23222'/><path d='M10 17.5q5 4.5 10 0' fill='none' stroke='%23222' stroke-width='1.6' stroke-linecap='round'/></svg>") center/contain no-repeat}
-.evbox{flex:1;border:1px solid var(--line);padding:.7em 1em}
+.evbox{flex:1;padding:.7em 1em}
 .evbox .t{font-weight:700}.evbox .t::after{content:".txt"}
 .evbox .b{margin-top:.3em;color:#444;white-space:pre-wrap}
 
@@ -91,11 +92,18 @@ body{margin:0;background:#cfcfcf;font-family:var(--font)}
 .hide-ui .ctl,.hide-ui .add,.hide-ui .sx,.hide-ui .sr{display:none!important}
 .hide-ui [contenteditable]:hover,.hide-ui [contenteditable]:focus{background:none}
 .hide-ui .img-slot,.hide-ui .sticker{cursor:default}.hide-ui .img-slot:hover,.hide-ui .sticker:hover{outline:0}.hide-ui .ph{display:none}
+#cropm{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;font:13px system-ui,sans-serif}
+#cropm .cbx{background:#222;color:#fff;padding:14px;display:flex;flex-direction:column;gap:10px;align-items:center}
+#cropm .cf{width:min(300px,60vw);aspect-ratio:3/4;background:var(--pbg,#4a4a4a);position:relative;overflow:hidden;cursor:grab;touch-action:none}
+#cropm .cf img{position:absolute;max-width:none;height:auto;pointer-events:none;user-select:none}
+#cropm .cr{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+#cropm button{border:0;padding:4px 10px;cursor:pointer;background:#fff;color:#111}
 </style>
 </head>
 <body>
 <div id="toolbar">
   <div class="g"><button id="bSave">저장</button><button id="bDl">HTML 다운로드</button><button id="bPrev">미리보기</button><button id="bReset">초기화</button></div>
+  <div class="g"><button id="bImg">이미지 저장</button><select id="fmt"><option value="png">PNG</option><option value="jpg">JPG</option></select><select id="qs"><option value="2400">2400px</option><option value="3600" selected>3600px (고화질)</option><option value="4800">4800px</option></select></div>
   <div class="g"><button id="bSticker">+ 스티커</button></div>
   <div class="g">
     <label>배경색<input type="color" data-var="--bg" value="#f4f4f2"></label>
@@ -108,12 +116,14 @@ body{margin:0;background:#cfcfcf;font-family:var(--font)}
     <label>기본 글자색<input type="color" data-var="--ink" value="#1a1a1a"></label>
     <label>보조색<input type="color" data-var="--sub" value="#888888"></label>
     <label>연표선<input type="color" data-var="--line" value="#1a1a1a"></label>
+    <label>사진 배경색<input type="color" data-var="--pbg" value="#4a4a4a"></label>
   </div>
   <div class="g" title="요소를 클릭하거나 글자를 드래그한 뒤 적용">
     <b>선택 항목</b>
     <label>글자색<input type="color" id="cText" value="#1a1a1a"></label>
     <label>배경색<input type="color" id="cBg" value="#ffffff"></label>
     <label>글꼴<select id="fontSel"></select></label>
+    <button class="fmt" data-c="bold"><b>B</b></button><button class="fmt" data-c="italic"><i>I</i></button><button class="fmt" data-c="underline"><u>U</u></button><button class="fmt" data-c="strikeThrough"><s>S</s></button>
     <button id="bClr">스타일 해제</button>
   </div>
 </div>
@@ -256,6 +266,7 @@ sheet.addEventListener('click',e=>{
   if(preview())return;const t=e.target;
   if(t.classList.contains('sx')){t.closest('.sticker').remove();sched();return}
   const s=t.closest('.img-slot');
+  if(s&&s.classList.contains('photo')){photoEd(s);return}
   if(s){choose(s.classList.contains('nc')?800:1000,u=>{s.querySelectorAll('img').forEach(x=>x.remove());const im=document.createElement('img');im.src=u;s.prepend(im);const p=s.querySelector('.ph');if(p)p.style.display='none';sched()});return}
   const b=t.closest('.ctl button');
   if(b){const it=b.closest('.li'),a=b.dataset.a;
@@ -266,6 +277,39 @@ sheet.addEventListener('click',e=>{
   const ad=t.closest('.add');
   if(ad){const l=sheet.querySelector(ad.dataset.add),c=l.lastElementChild.cloneNode(true);c.querySelectorAll('.cur').forEach(x=>x.classList.remove('cur'));l.appendChild(c);initCtl();sched()}
 });
+
+/* format */
+const FM={bold:['fontWeight','700'],italic:['fontStyle','italic'],underline:['textDecoration','underline'],strikeThrough:['textDecoration','line-through']};
+document.querySelectorAll('.fmt').forEach(b=>{b.onmousedown=e=>e.preventDefault();b.onclick=()=>{
+  if(saved){const n=saved.commonAncestorContainer,h=(n.nodeType===1?n:n.parentElement).closest('[contenteditable="true"]');
+    if(h){h.focus();const g=getSelection();g.removeAllRanges();g.addRange(saved);document.execCommand('styleWithCSS',false,false);document.execCommand(b.dataset.c);sched();return}}
+  if(cur){const[k,v]=FM[b.dataset.c];cur.style[k]=cur.style[k]===v?'':v;sched()}}});
+
+/* photo crop */
+function photoEd(s){
+  const im0=s.querySelector('img'),o=document.createElement('div');o.id='cropm';
+  o.innerHTML='<div class="cbx"><div class="cf"><img alt=""></div><div class="cr"><label>확대 <input type="range" min="20" max="400" value="100"></label><button data-a="n">사진 선택</button><button data-a="x">삭제</button><button data-a="o">적용</button><button data-a="c">취소</button></div><div>드래그로 위치 이동 · 빈 공간은 사진 배경색으로 채워져요</div></div>';
+  document.body.appendChild(o);
+  const f=o.querySelector('.cf'),im=f.firstChild,rg=o.querySelector('input'),fw=()=>f.clientWidth,fh=()=>f.clientHeight;
+  let src,nw,nh,s0,x,y,w,d;
+  const draw=()=>{im.style.left=x+'px';im.style.top=y+'px';im.style.width=w+'px'};
+  function load(u,keep){const t=new Image();t.onload=()=>{src=u;nw=t.width;nh=t.height;s0=Math.max(fw()/nw,fh()/nh);
+    if(keep&&im0&&im0.style.width){w=parseFloat(im0.style.width)/100*fw();x=parseFloat(im0.style.left)/100*fw();y=parseFloat(im0.style.top)/100*fh()}
+    else{w=nw*s0;x=(fw()-w)/2;y=(fh()-w*nh/nw)/2}
+    rg.value=Math.round(w/(nw*s0)*100);im.src=u;draw()};t.src=u}
+  rg.oninput=()=>{const W=nw*s0*rg.value/100,cx=fw()/2,cy=fh()/2,k=W/w;x=cx-(cx-x)*k;y=cy-(cy-y)*k;w=W;draw()};
+  f.onpointerdown=e=>{d={X:e.clientX,Y:e.clientY,x,y};f.setPointerCapture(e.pointerId)};
+  f.onpointermove=e=>{if(d){x=d.x+e.clientX-d.X;y=d.y+e.clientY-d.Y;draw()}};
+  f.onpointerup=()=>d=null;
+  o.onclick=e=>{const a=e.target.dataset.a;if(!a)return;
+    if(a==='n')choose(1600,u=>load(u));
+    else if(a==='c')o.remove();
+    else if(a==='x'){s.querySelectorAll('img').forEach(i=>i.remove());const p=s.querySelector('.ph');if(p)p.style.display='';o.remove();sched()}
+    else if(a==='o'&&src){let i=s.querySelector('img');if(!i){i=document.createElement('img');s.prepend(i)}
+      i.src=src;i.style.cssText=`left:${x/fw()*100}%;top:${y/fh()*100}%;width:${w/fw()*100}%`;
+      const p=s.querySelector('.ph');if(p)p.style.display='none';o.remove();sched()}};
+  if(im0)load(im0.src,true);else choose(1600,u=>load(u));
+}
 
 /* stickers */
 function addSticker(u){
@@ -315,6 +359,17 @@ initCtl();$('#bgo').value=Math.round((parseFloat(bg().style.opacity)||.15)*100);
 $('#bSave').onclick=()=>{save();alert('저장했어요.')};
 $('#bPrev').onclick=()=>{const on=document.body.classList.toggle('hide-ui');setCur(null);sheet.querySelectorAll('[contenteditable]').forEach(x=>x.contentEditable=on?'false':'true')};
 $('#bReset').onclick=()=>{if(confirm('처음 상태로 되돌릴까요?')){localStorage.removeItem(KEY);localStorage.removeItem(TK);location.reload()}};
+$('#bImg').onclick=async()=>{
+  const b=$('#bImg'),was=preview();b.disabled=true;b.textContent='생성중...';
+  try{
+    if(!window.htmlToImage)await new Promise((ok,no)=>{const e=document.createElement('script');e.src='https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js';e.onload=ok;e.onerror=no;document.head.appendChild(e)});
+    if(!was)$('#bPrev').click();clean();
+    const jpg=$('#fmt').value==='jpg',fn=jpg?htmlToImage.toJpeg:htmlToImage.toPng,
+      o={pixelRatio:$('#qs').value/sheet.offsetWidth,cacheBust:true,backgroundColor:getComputedStyle(sheet).backgroundColor,quality:.95};
+    await fn(sheet,o);
+    const a=document.createElement('a');a.href=await fn(sheet,o);a.download='pair.'+(jpg?'jpg':'png');a.click();
+  }catch(e){alert('이미지 저장 실패: '+(e.message||e))}
+  if(!was)$('#bPrev').click();initCtl();b.disabled=false;b.textContent='이미지 저장'};
 $('#bDl').onclick=()=>{
   if(preview())$('#bPrev').click();clean();
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['<!DOCTYPE html>\n'+root.outerHTML],{type:'text/html'}));a.download='pair.html';a.click();
