@@ -47,8 +47,9 @@ body{margin:0;background:#cfcfcf;font-family:var(--font)}
 
 .idcard{width:13em;flex:none;border-radius:.7em;background:#333;color:#fff;padding:.8em .8em .9em;display:flex;flex-direction:column;align-items:center;gap:.6em;box-shadow:0 .3em .9em rgba(0,0,0,.28)}
 .idcard .badge{width:2.4em;height:2.4em;flex:none}
-.idcard .photo{width:100%;aspect-ratio:3/4;flex:none;background:var(--pbg,#4a4a4a)}
+.idcard .photo{width:84%;aspect-ratio:3/4;flex:none;background:var(--pbg,#4a4a4a)}
 .img-slot.photo img{inset:auto;left:0;top:0;width:100%;height:auto;max-width:none;object-fit:fill}
+.idcard .af{font-size:.95em;line-height:1.3;text-align:center;width:100%;min-height:1.3em;flex:none;opacity:.85}
 .idcard .nm{font-weight:700;font-size:1.5em;line-height:1.2;text-align:center;width:100%;flex:none}
 
 .recog{display:grid;grid-template-columns:1fr 2.4em 1fr;align-items:center;gap:.6em;margin:1.4em 0 .4em}
@@ -136,13 +137,12 @@ body{margin:0;background:#cfcfcf;font-family:var(--font)}
       <div class="img-slot nc logo"><span class="ph">로고</span></div>
       <div class="world" contenteditable="true">세계관 설명을 입력하세요.</div>
     </div>
-    <div class="pairname" contenteditable="true">페어명</div>
 
     <div class="profile">
       <div class="idcard">
         <div class="img-slot nc badge"><span class="ph">로고</span></div>
         <div class="img-slot photo"><span class="ph">증명사진</span></div>
-        <div class="nm" contenteditable="true">이름</div>
+        <div class="af" contenteditable="true">소속</div><div class="nm" contenteditable="true">이름</div>
       </div>
       <div class="info">
         <div class="fields">
@@ -165,7 +165,7 @@ body{margin:0;background:#cfcfcf;font-family:var(--font)}
       <div class="idcard">
         <div class="img-slot nc badge"><span class="ph">로고</span></div>
         <div class="img-slot photo"><span class="ph">증명사진</span></div>
-        <div class="nm" contenteditable="true">이름</div>
+        <div class="af" contenteditable="true">소속</div><div class="nm" contenteditable="true">이름</div>
       </div>
       <div class="info">
         <div class="fields">
@@ -354,6 +354,7 @@ let tm;function sched(){clearTimeout(tm);tm=setTimeout(save,600)}
 function clean(){sheet.querySelectorAll('.ctl').forEach(x=>x.remove());sheet.querySelectorAll('.cur').forEach(x=>x.classList.remove('cur'))}
 function save(){clean();try{localStorage.setItem(KEY,sheet.innerHTML)}catch(e){console.warn(e)}initCtl();if(cur)cur.classList.add('cur')}
 try{const h=localStorage.getItem(KEY);if(h)sheet.innerHTML=h}catch(e){}
+sheet.querySelectorAll('.pairname').forEach(x=>x.remove());sheet.querySelectorAll('.idcard .nm').forEach(n=>{if(!n.previousElementSibling||!n.previousElementSibling.classList.contains('af')){const a=document.createElement('div');a.className='af';a.contentEditable='true';a.textContent='소속';n.before(a)}});
 initCtl();$('#bgo').value=Math.round((parseFloat(bg().style.opacity)||.15)*100);
 
 $('#bSave').onclick=()=>{save();alert('저장했어요.')};
